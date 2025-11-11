@@ -22,7 +22,7 @@ source /usr/sbin/helper.sh
 
 ### Start of Script Variables
 readonly SCRIPT_NAME="hideuimenus"
-readonly SCRIPT_VERSION="v1.0.0"
+readonly SCRIPT_VERSION="1.0.0"
 readonly SCRIPT_NAME_DISPLAY="ModRouterUI"
 readonly GIT_URL=https://raw.githubusercontent.com/kstamand/${SCRIPT_NAME}/master/
 readonly ADDON_DIR="/jffs/addons"

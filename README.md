@@ -1,11 +1,11 @@
 # ModrouterUI - Customize Asuswrt-Merlin router Web UI to hide unused / unwanted tabs
 
-This script has been tested on a GT-AX6000, running Asuswrt-Merlin 3006.102.5
+This script has been developed and tested on a GT-AX6000, running Asuswrt-Merlin 3006.102.5
 
 ## Overview:
-- Installs script onto router and adds call to "services-start" to automatically customize router WebUI on router bootup
-- Provides and interactive manu of options to maintain the script and customize list of tabs to hide
-** You must edit the hidetabs file before first use, right after install
+- Installs script onto router and adds call to "services-start" to automatically customize router WebUI menus on router bootup
+- Provides and interactive manu of options to maintain the script and customize list of menus to hide from router WebUI
+** You must edit the hide_menus_list file before first use, right after install
 
 ## Install:
 *Requires Asuswrt-Merlin, JFFS enabled, and entware installed via AMTM*
@@ -13,13 +13,14 @@ This script has been tested on a GT-AX6000, running Asuswrt-Merlin 3006.102.5
 SSH to the router and enter:
 
 ```Shell
-/usr/sbin/curl /usr/sbin/curl --retry 3 "https://raw.githubusercontent.com/kstamand/modrouterui/master/modrouterui" -o "/jffs/addons/modrouterui/modrouterui" --create-dirs && chmod +x /jffs/addons/modrouterui/modrouterui && sh /jffs/addons/smodrouterui/modrouteryi -install
+/usr/sbin/curl /usr/sbin/curl --retry 3 "https://raw.githubusercontent.com/kstamand/modrouterui/master/modrouterui" -o "/jffs/addons/modrouterui/hidemenus" --create-dirs && chmod +x /jffs/addons/modrouterui/hidemenus && sh /jffs/addons/modrouterui/hidemenus -install
 ```
 
 ## Configuration:
-1. Edit the file /jffs/addons/modrouterui/hidtabs file to contain the menu tab names you wish to hide / not show in routers WebUI
-  - To see a list of avaialable tab names, choose option 2 (about) from the script's menu
-  - add one line for each tab name 
+1. Edit the file /jffs/addons/modrouterui/hide_menus_list file, using the option #5 (Edit), from the scripts menu:
+  - The hide_menus_list file contains a commented list of menus to select
+  - Uncomment the menus you wish to hide, generally those you may never use
+  - After you save and exit the editor, choose menu option #6 to apply the changes (hide selected menus) from router's UI
    
 ## Usage:
 Once installed, from a terminal session into the router, enter the command modrouterui and choose from one of the menu options:

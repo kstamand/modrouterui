@@ -15,14 +15,14 @@
 #menu_QIS
 
 # If you are not running a mesh network, might as well remove it
-menu_AiMesh
+#menu_AiMesh
 
 # If you plan to configure VLANs, done't remove this menu
 #menu_GuestNetwork
 
 # AiProtection is a personal choice, but if you are uncomfortable sharing your data with TrendMicro or don't
 #+ plan to use AiProtection, then you may consider removing it
-menu_AiProtection
+#menu_AiProtection
 
 # If you have kids and want to have control of their Internet usage, keep this menu
 #menu_ParentalControl
@@ -35,22 +35,22 @@ menu_AiProtection
 #menu_TrafficAnalyzer
 
 # If you are not a gamer, you may want to remove this
-menu_GameBoost
+#menu_GameBoost
 
 # If you don't plan on port forwarding anything from the Internet to your internal network, you may want to remove this
-menu_OpenNAT
+#menu_OpenNAT
 
 # This may not be visible in your router UI (it wasn't on mine), so it's up to you whether to remove it or not
 #menu_TencentAcceleration
 
 # There are a number of other more secure storage solutions, use it your own risk
-menu_AiCloud
+#menu_AiCloud
 
 # Useful system level information for your router under this menu, so you may want to keep it
-# menu_Sysinfo
+#menu_Sysinfo
 
 # To configure your Wireles SSID for the main network, you need this menu
-# menu_Wireless
+#menu_Wireless
 
 # To configure your Ehternet/LAN portion of your network, you need this menu
 #menu_LAN
@@ -59,10 +59,10 @@ menu_AiCloud
 #menu_WAN
 
 # If you don't plan on using If This Then That (IFTT), then y0ou may want to remove this
-menu_Alexa_IFTTT
+#menu_Alexa_IFTTT
 
 # If you are not using IPv6 in your network, you may want to remove this but probably best to keep it 
-menu_IPv6
+#menu_IPv6
 
 # You need this menu if you plan on doing any VPN level networking
 #menu_VPN

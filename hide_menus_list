@@ -1,0 +1,80 @@
+##
+## Below is the list of default menus in the Asuswrt-Merlin router UI
+##+ if any menus in your router's ui (found under the file menuTree.js), add them to this liset
+## 
+## To remove one of the menus from the UI, uncomment the given menu_xxx line
+##
+## In general, there's no benefit in removing menus other than personal pet peeves - if you never use a given
+##+ menu, you can just ignore it 
+##
+## Menus to remove are a personal choice and it's important to note that when seeking help on SNBFORUMS
+## + you should return to the default menus ("unhide" function of the hideuimenus script) first 
+##
+
+# Quick Internet Setup (QIS) is the initial setup menu for configuring the router. May be useful and best to keep
+#menu_QIS
+
+# If you are not running a mesh network, might as well remove it
+menu_AiMesh
+
+# If you plan to configure VLANs, done't remove this menu
+#menu_GuestNetwork
+
+# AiProtection is a personal choice, but if you are uncomfortable sharing your data with TrendMicro or don't
+#+ plan to use AiProtection, then you may consider removing it
+menu_AiProtection
+
+# If you have kids and want to have control of their Internet usage, keep this menu
+#menu_ParentalControl
+
+# This menus shows as "Adaptive QOS" in the router UI, and includes an Internet Speed test under it
+#+ if you want any of that functionality, don't remove this menu
+#menu_BandwidthMonitor
+
+# Having the ability to view network and client level network stats is useful, so you may want to keep this 
+#menu_TrafficAnalyzer
+
+# If you are not a gamer, you may want to remove this
+menu_GameBoost
+
+# If you don't plan on port forwarding anything from the Internet to your internal network, you may want to remove this
+menu_OpenNAT
+
+# This may not be visible in your router UI (it wasn't on mine), so it's up to you whether to remove it or not
+#menu_TencentAcceleration
+
+# There are a number of other more secure storage solutions, use it your own risk
+menu_AiCloud
+
+# Useful system level information for your router under this menu, so you may want to keep it
+# menu_Sysinfo
+
+# To configure your Wireles SSID for the main network, you need this menu
+# menu_Wireless
+
+# To configure your Ehternet/LAN portion of your network, you need this menu
+#menu_LAN
+
+# To configure your WAN/Internet related settings, you need this menu
+#menu_WAN
+
+# If you don't plan on using If This Then That (IFTT), then y0ou may want to remove this
+menu_Alexa_IFTTT
+
+# If you are not using IPv6 in your network, you may want to remove this but probably best to keep it 
+menu_IPv6
+
+# You need this menu if you plan on doing any VPN level networking
+#menu_VPN
+
+# For firewall management purposes, don't remove this
+#menu_Firewall
+
+# Generarl Router managment, keep it
+#menu_Setting
+
+# You will need this is you want to view logs and/or do any debugging and system monitoring
+#menu_Log
+
+# This menu has uesfull network level diagnostics and could prove useful, keep it
+#menu_NekworkTool

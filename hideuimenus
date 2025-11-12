@@ -554,6 +554,9 @@ Uninstall () {
     # Remove the addons startup line in services-start
     Add_Startup uninstall
 
+    # Unhide menus that were added to menuTree.js to be excluded
+    Unhide
+
     # output completion message
     Green "Completed uninstalling the ${SCRIPT_DISPLAY_NAME} script"
 } # end of Uninstall()
@@ -605,6 +608,9 @@ Main_Menu() {
         ;;
         '9')
             Uninstall
+            Magenta "Thanks for using $SCRIPT_NAME_DISPLAY - Bye"
+            cd
+            exit
         ;;
         'e'|'E'|'exit')
             return

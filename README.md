@@ -13,7 +13,7 @@ This script has been developed and tested on a GT-AX6000, running Asuswrt-Merlin
 SSH to the router and enter:
 
 ```Shell
-/usr/sbin/curl /usr/sbin/curl --retry 3 "https://raw.githubusercontent.com/kstamand/modrouterui/master/modrouterui" -o "/jffs/addons/modrouterui/hidemenus" --create-dirs && chmod +x /jffs/addons/modrouterui/hidemenus && sh /jffs/addons/modrouterui/hidemenus -install
+/usr/sbin/curl --retry 3 "https://raw.githubusercontent.com/kstamand/modrouterui/master/modrouterui" -o "/jffs/addons/modrouterui/hidemenus" --create-dirs && chmod +x /jffs/addons/modrouterui/hidemenus && sh /jffs/addons/modrouterui/hidemenus -install
 ```
 
 ## Configuration:

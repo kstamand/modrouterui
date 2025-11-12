@@ -23,7 +23,7 @@ SSH to the router and enter:
   - After you save and exit the editor, choose menu option #6 to apply the changes (hide selected menus) from router's UI
    
 ## Usage:
-Once installed, from a terminal session into the router, enter the command ## hideuimenus and choose from one of the menu options:
+Once installed, from a terminal ssh session into the router, enter the command hideuimenus and choose from one of the menu options:
 
     (1) About        explain functionality
     (2) Help         information on how to use this script

@@ -24,7 +24,7 @@ source /usr/sbin/helper.sh
 readonly SCRIPT_NAME="hideuimenus"
 readonly SCRIPT_VERSION=1.0.0
 readonly SCRIPT_NAME_DISPLAY="ModRouterUI"
-readonly GIT_URL=https://raw.githubusercontent.com/kstamand/${SCRIPT_NAME}/master/
+readonly GIT_URL=https://raw.githubusercontent.com/kstamand/modrouterui/master
 readonly ADDON_DIR="/jffs/addons"
 readonly SCRIPT_NAME_DIR="${ADDON_DIR}/modrouterui"
 readonly SCRIPT_INSTALL_PATH="${SCRIPT_NAME_DIR}/${SCRIPT_NAME}"
@@ -137,7 +137,7 @@ Press_Enter(){
 } # end of Press_Enter()
 
 Check_Firmware() {
-    Cyan "   - Checking firmware support"
+    Green "   - Checking firmware support"
     if ! nvram get rc_support | grep -q am_addons; then
         Red "${SCRIPT_NAME_DISPLAY} requires ASUSWRT-Merlin Addon API support. Installation aborted."
         return 1
@@ -155,7 +155,7 @@ Download_File() {
     if curl -fsL --retry 3 --connect-timeout 3 "${GIT_URL}/${1}" -o "/tmp/${1}"; then
         if [ "$(md5sum "/tmp/${1}" | awk '{print $1}')" != "$(md5sum "${2}" 2>/dev/null | awk '{print $1}')" ]; then
             mv -f "/tmp/${1}" "${2}"
-            Cyan "   - Installed $(basename "${1}")"
+            Green "   - Installed $(basename "${1}")"
         else
             Yellow "  File $(basename "${2}") is already up-to-date"
             rm -f "/tmp/${1}" 2>/dev/null
@@ -170,31 +170,33 @@ Add_Startup(){
     # Parameters: $1 - install or uninstall
     case $1 in
         install)
-            Green "   -  Inserting $SCRIPT_INSTALL_PATH services-start line"
+            Green "   - Inserting ${SCRIPT_INSTALL_PATH} services-start line"
             # check if a services-start file exists and process as follows
 			if [ -f /jffs/scripts/services-start ]; then
-				STARTUPLINECOUNT=$(grep -c "$SCRIPT_INSTALL_PATH" /jffs/scripts/services-start)
+				STARTUPLINECOUNT=$(grep -c "${SCRIPT_INSTALL_PATH}" /jffs/scripts/services-start)
 				# delete existing comment line if it exists - cleanup any residual stuff
 				if [ "$STARTUPLINECOUNT" -ne 0 ]; then
-					sed -i "$SCRIPT_INSTALL_PATH"'/d' /jffs/scripts/services-start
-                    echo "/bin/sh $SCRIPT_INSTALL_PATH hide    # added by $SCRIPT_DISPLAY_NAME" >> /jffs/scripts/services-start
+					sed -i -e '/'"$SCRIPT_NAME"'/d' /jffs/scripts/services-start
+                    echo "/bin/sh ${SCRIPT_INSTALL_PATH} hide    # added by ${SCRIPT_NAME}" >> /jffs/scripts/services-start
+                else
+                    echo "/bin/sh ${SCRIPT_INSTALL_PATH} hide    # added by ${SCRIPT_NAME}" >> /jffs/scripts/services-start
 				fi
 			# a service-event file did not exist, so create one
             else
 				echo "#!/bin/sh" > /jffs/scripts/services-start
 				echo "" >> /jffs/scripts/services-start
-				echo "/bin/sh $SCRIPT_INSTALL_PATH hide  # added by $SCRIPT_DISPLAY_NAME" >> /jffs/scripts/services-start
+				echo "/bin/sh ${SCRIPT_INSTALL_PATH} hide  # added by ${SCRIPT_DISPLAY_NAME}" >> /jffs/scripts/services-start
 				chmod 0755 /jffs/scripts/services-start
 			fi
         ;;
         uninstall)
-			Green "   - Removing $SCRIPT_INSTALL_PATH from services-start"
+			Green "   - Removing ${SCRIPT_INSTALL_PATH} from services-start"
             # check if services-start line exists and if so, remove any HideUIMenus lines found
             if [ -f /jffs/scripts/services-start ]; then
-				STARTUPLINECOUNT=$(grep -c "$$SCRIPT_INSTALL_PATH" /jffs/scripts/services-start)
+				STARTUPLINECOUNT=$(grep -c "${SCRIPT_INSTALL_PATH}" /jffs/scripts/services-start)
 				
 				if [ "$STARTUPLINECOUNT" -gt 0 ]; then
-					sed -i '/# '"$SCRIPT_INSTALL_PATH"'/d' /jffs/scripts/services-start
+					sed -i -e '/'"$SCRIPT_NAME"'/d' /jffs/scripts/services-start
 				fi
 			fi
         ;;
@@ -223,17 +225,16 @@ Setup_Aliases() {
         ;;
         uninstall)
             # remove alias from profile.add. Brute force, meaning not checking to see if exists first, just assume and delete
-            if [ -f /opt/bin/${SCRIPT_NAME} ]; then
+            if [ -L /opt/bin/${SCRIPT_NAME} ]; then
                 # Entware is installed, so setup link to /opt/bin
                 Green "   - Deleting ${SCRIPT_NAME} link in Entware /opt/bin"
                 rm "/opt/bin/${SCRIPT_NAME}"
             else
                 # Remove alias from profile.add
-                Green "   -  Deleting ${SCRIPT_NAME} alias in profile.add"
                 if [ -f /jffs/configs/profile.add ]; then
                     STARTUPLINECOUNT=$(grep -c '# '"$SCRIPT_NAME" /jffs/configs/profile.add)
-                    
                     if [ "$STARTUPLINECOUNT" -gt 0 ]; then
+                        Green "   -  Deleting ${SCRIPT_NAME} alias in profile.add"
                         sed -i -e '/# '"$SCRIPT_NAME"'/d' /jffs/configs/profile.add
                     fi
                 fi
@@ -254,6 +255,7 @@ Custom_Settings(){
 				# delete existing comment line if it exists - cleanup any residual stuff
 				if [ "$STARTUPLINECOUNT" -gt 0 ]; then
 					sed -i -e  '/'"$SCRIPT_NAME_DISPLAY"'/d' $SETTINGS_FILE
+                    am_settings_set "${SCRIPT_NAME_DISPLAY}"_ver "${SCRIPT_VERSION}"
 				else
                     am_settings_set "${SCRIPT_NAME_DISPLAY}"_ver "${SCRIPT_VERSION}"
 				fi
@@ -266,7 +268,7 @@ Custom_Settings(){
             Green "   - Deleting ${SCRIPTS_NAME_DISPLAY} cusotom_settings.txt name space"
             # check if any previous name space entries exist and remove them
 			if [ -f $SETTINGS_FILE ]; then
-				STARTUPLINECOUNT=$(grep -c '# '"$SCRIPT_NAME_DISPLAY" $SETTINGS_FILE)
+				STARTUPLINECOUNT=$(grep -c "$SCRIPT_NAME_DISPLAY" $SETTINGS_FILE)
 				# delete existing comment line if it exists - cleanup any residual stuff
 				if [ "$STARTUPLINECOUNT" -gt 0 ]; then
 					sed -i -e  '/'"$SCRIPT_NAME_DISPLAY"'/d' $SETTINGS_FILE
@@ -280,10 +282,6 @@ Install() {
     # Parameter options: None
     # Install script and download webui file
     # This is also called by the update process once a new script is downloaded by update() function
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Install function can only be run interactively. Exiting script"
-#        exit 5
-#    fi
     clear
     Scriptinfo
 
@@ -297,7 +295,7 @@ Install() {
 
     # Create the directory for this scripts addon files
     if [ ! -d "${SCRIPT_NAME_DIR}" ]; then
-        Green "   - Creating $SCRIPT_NAME ADDON directory..."
+        Green "   - Creating $SCRIPT_NAME ADDON directory"
         mkdir -p "${SCRIPT_NAME_DIR}"
     fi
 
@@ -307,7 +305,7 @@ Install() {
     chmod 755 ${SCRIPT_INSTALL_PATH} # make script executable
 
     # download a sample hidemenuslist file
-    Green"   - Downloading $(basename "${HIDEMENUS_FILE_PATH}")"
+    Green "   - Downloading $(basename "${HIDEMENUS_FILE_PATH}")"
     Download_File "$(basename "${HIDEMENUS_FILE_PATH}")" "${HIDEMENUS_FILE_PATH}" #HideUIMenus list
 
     # Create a defaultmenus file, containing the list of valid menu names to choose from for hiding
@@ -327,11 +325,6 @@ Install() {
 } # end of Install()
 
 Update() {
-#    # Exit if trying to run edit function non-interactively
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Update function can only be run interactively. Exiting script"
-#        exit
-#    fi
 
     # Check for, and optionally apply updates.
     # Parameter options: check (do not update), silent (update without prompting)
@@ -340,7 +333,7 @@ Update() {
     Green "Checking for updates"
     # Update the webui status thorugh detect_update.js ajax call.
     # Get the version of the script on Github
-    remotever="$(curl -fsN --retry 3 --connect-timeout 3 "${GIT_URL}/$(basename "${SCRIPT_INSTALL_PATH}")" | /bin/grep "^version=" | sed -e 's/version=//')"
+    remotever="$(curl -fsN --retry 3 --connect-timeout 3 "${GIT_URL}"/"${SCRIPT_NAME}" | /bin/grep "SCRIPT_VERSION=" | sed -e 's/readonly SCRIPT_VERSION=//')"
     # Compare local and remote versions to see how to proceed
     if [ "$( echo "${SCRIPT_VERSION}" | sed 's/\.//g' )" -lt "$( echo "${remotever}" | sed 's/\.//g' )" ]; then		# strip the . from version string for numeric comparison
         # version upgrade
@@ -389,12 +382,6 @@ Update() {
 Edit () {
     local before_hash 
     local after_hash 
-
-#    # Exit if trying to run edit function non-interactively
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Edit function can only be run interactively. Exiting script"
-#        exit
-#    fi
 
     # Get the hash of the hidemenus list file BEFORE editing
     before_hash=$(sha256sum "/jffs/addons/modrouterui/hide_menus_list" | awk '{ print $1 }')
@@ -518,11 +505,6 @@ Hide () {
 } # end of Hide()
 
 Unhide () {
-#    # Exit if trying to run this function non-interactively
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Unhide function can only be run interactively. Exiting script"
-#        exit
-#    fi
 
     Green "Removing hidden menus and returning to the defaults"
 
@@ -555,24 +537,26 @@ Unhide () {
 } # end of Unhide()
 
 Uninstall () {
-#    # Exit if trying to run this function non-interactively
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Uninstall function can only be run interactively. Exiting script"
-#        exit
-#    fi
     Green "Uninstalling the ${SCRIPT_DISPLAY_NAME} script"
+
+    # Remove the scripts addon directory
+    Green "   - removing the scripts addon directory"
+    rm -r ${SCRIPT_NAME_DIR}
+
+    # Remove the scripts alias, either under /opt/bin or in profiles.add
+    Setup_Aliases uninstall
+
+    # Remove the addons custom-settings.txt entry
+    Custom_Settings uninstall
+
+    # Remove the addons startup line in services-start
+    Add_Startup uninstall
 
     # output completion message
     Green "Completed uninstalling the ${SCRIPT_DISPLAY_NAME} script"
 } # end of Uninstall()
 
 Main_Menu() {
-#    # Exit if trying to run this function non-interactively
-#    if [ ! "${mode}" = "interactive" ]; then
-#        Logmsg "[ERROR] Main_Menu function can only be run interactively. Exiting script"
-#        exit
-#    fi
-
     local yn
     [ "${mode}" = "interactive" ] || return
     clear

@@ -609,7 +609,7 @@ Main_Menu() {
         ;;
         '9')
             Uninstall
-            Magenta "Thanks for using $SCRIPT_NAME_DISPLAY - Bye"
+            Magenta "   - Thanks for using $SCRIPT_NAME_DISPLAY - Bye"
             cd
             exit
         ;;

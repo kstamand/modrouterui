@@ -23,8 +23,9 @@ source /usr/sbin/helper.sh
 ### Start of Script Variables
 readonly SCRIPT_NAME="hideuimenus"
 readonly SCRIPT_VERSION="v1.0.0"
+readonly scriptVersRegExp="v[0-9]{1,2}([.][0-9]{1,2})([.][0-9]{1,2})"
 readonly SCRIPT_NAME_DISPLAY="ModRouterUI"
-readonly GIT_URL=https://raw.githubusercontent.com/kstamand/modrouterui/master
+readonly GIT_URL="https://raw.githubusercontent.com/kstamand/modrouterui/master"
 readonly ADDON_DIR="/jffs/addons"
 readonly SCRIPT_NAME_DIR="${ADDON_DIR}/modrouterui"
 readonly SCRIPT_INSTALL_PATH="${SCRIPT_NAME_DIR}/${SCRIPT_NAME}"
@@ -143,7 +144,7 @@ Check_Firmware() {
         return 1
     fi
     if [ "$(nvram get jffs2_scripts)" != "1" ]; then
-        Red "\"Enable JFFS custom scripts and configs\" is not enabled. Please enable it in the GUI. Aborting installation."
+        Red "   - Enable JFFS custom scripts and configs is not enabled. Please enable it in the GUI. Aborting installation."
         return 1
     fi
 } # end of Check_Firmware()
@@ -169,7 +170,7 @@ Download_File() {
 Add_Startup(){
     # Parameters: $1 - install or uninstall
     case $1 in
-        install)
+        'install')
             Green "   - Inserting ${SCRIPT_INSTALL_PATH} services-start line"
             # check if a services-start file exists and process as follows
 			if [ -f /jffs/scripts/services-start ]; then
@@ -189,7 +190,7 @@ Add_Startup(){
 				chmod 0755 /jffs/scripts/services-start
 			fi
         ;;
-        uninstall)
+        'uninstall')
 			Green "   - Removing ${SCRIPT_INSTALL_PATH} from services-start"
             # check if services-start line exists and if so, remove any HideUIMenus lines found
             if [ -f /jffs/scripts/services-start ]; then
@@ -333,9 +334,10 @@ Update() {
     Green "Checking for updates"
     # Update the webui status thorugh detect_update.js ajax call.
     # Get the version of the script on Github
-    remotever="$(curl -fsN --retry 3 --connect-timeout 3 "${GIT_URL}"/"${SCRIPT_NAME}" | /bin/grep "SCRIPT_VERSION=" | sed -e 's/readonly SCRIPT_VERSION=//')"
+    localver="$(grep "SCRIPT_VERSION=" $SCRIPT_INSTALL_PATH | grep -m1 -oE "$scriptVersRegExp")"
+    remotever="$(curl -fsL --retry 4 --retry-delay 5 "$GIT_URL/$SCRIPT_NAME" | grep "SCRIPT_VERSION=" | grep -m1 -oE "$scriptVersRegExp")"
     # Compare local and remote versions to see how to proceed
-    if [ "$( echo "${SCRIPT_VERSION}" | sed 's/\.//g' )" -lt "$( echo "${remotever}" | sed 's/\.//g' )" ]; then		# strip the . from version string for numeric comparison
+    if [ "$localver" != "$remotever" ]; then
         # version upgrade
         updatestatus="Update"
     else
@@ -351,12 +353,12 @@ Update() {
         case "${updatestatus}" in
         'NoUpdate')
             Green "   - You have the latest version installed"
-            printf " Would you like to overwrite your existing installation anyway? [1=Yes 2=No]: "
+            printf " Would you like to overwrite your existing installation anyway? [y=Yes n=No]: "
             ;;
         'Update')
                     # New Version Number
             Green "   - ${SCRIPT_NAME_DISPLAY} v${updatestatus} is now available!"
-            printf " Would you like to update now? [1=Yes 2=No]: "
+            printf " Would you like to update now? [y=Yes n=No]: "
             ;;
         *)
             Red "   - Error occured checking version information"

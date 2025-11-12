@@ -209,7 +209,7 @@ Setup_Aliases() {
     # Parameters: $1 - install or uninstall
     # shortcuts to launching script
     case $1 in
-        install)
+        'install')
             # remove shell alias
             local cmdline
             if [ -d /opt/bin ]; then
@@ -224,7 +224,7 @@ Setup_Aliases() {
                 echo "${cmdline}" >> /jffs/configs/profile.add
             fi
         ;;
-        uninstall)
+        'uninstall')
             # remove alias from profile.add. Brute force, meaning not checking to see if exists first, just assume and delete
             if [ -L /opt/bin/${SCRIPT_NAME} ]; then
                 # Entware is installed, so setup link to /opt/bin
@@ -323,6 +323,7 @@ Install() {
 
     # Install complete messages
     Green "${SCRIPT_NAME_DISPLAY} installation complete!"
+    Yellow "   - be sure to run the hideuimenus command, then choose option 4 to edit which menus you want to hide, then option 5 to apply the changes"
 } # end of Install()
 
 Update() {

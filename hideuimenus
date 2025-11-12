@@ -323,7 +323,7 @@ Install() {
 
     # Install complete messages
     Green "${SCRIPT_NAME_DISPLAY} installation complete!"
-    Yellow "   - be sure to run the hideuimenus command, then choose option 5 to edit which menus you want to hide, then option 6 to apply the changes"
+    Magenta "   - be sure to run the hideuimenus command, then choose option 5 to edit which menus you want to hide, then option 6 to apply the changes"
 } # end of Install()
 
 Update() {

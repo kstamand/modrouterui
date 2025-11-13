@@ -7,6 +7,14 @@
 #  |_|  |_|\___/ \__,_|_| \_\___/ \__,_|\__\___|_|   \___/|___|  #
 #----------------------------------------------------------------#
 
+##############        Shellcheck directives      #############
+# shellcheck disable=SC2034
+# shellcheck disable=SC3037
+# shellcheck disable=SC3043
+# shellcheck source=/dev/null  
+##############################################################
+
+#----------------------------------------------------------------------------------------------------#
 # Author:       kstamand
 # Date:         2025-11-01
 # Synopsis:     Hide select AsusWRT UI menuss 
@@ -18,7 +26,7 @@
 #----------------------------------------------------------------------------------------------------#
 
 # AsusWRT Merlin Addon API helper functions
-source /usr/sbin/helper.sh
+. /usr/sbin/helper.sh
 
 ### Start of Script Variables
 readonly SCRIPT_NAME="hideuimenus"
@@ -249,7 +257,7 @@ Custom_Settings(){
     # Add / delete a name space in the Asuswrt third party addons custome_settings.txt file
     case $1 in
         install)
-            Green "   - Creating ${SCRIPTS_NAME_DISPLAY} cusotom_settings.txt name space"
+            Green "   - Creating ${SCRIPT_NAME_DISPLAY} cusotom_settings.txt name space"
             # check if any previous name space entries exist and remove them
 			if [ -f $SETTINGS_FILE ]; then
 				STARTUPLINECOUNT=$(grep -c "$SCRIPT_NAME_DISPLAY" $SETTINGS_FILE)
@@ -266,7 +274,7 @@ Custom_Settings(){
 			fi
         ;; 
         uninstall)
-            Green "   - Deleting ${SCRIPTS_NAME_DISPLAY} cusotom_settings.txt name space"
+            Green "   - Deleting ${SCRIPT_NAME_DISPLAY} cusotom_settings.txt name space"
             # check if any previous name space entries exist and remove them
 			if [ -f $SETTINGS_FILE ]; then
 				STARTUPLINECOUNT=$(grep -c "$SCRIPT_NAME_DISPLAY" $SETTINGS_FILE)
@@ -287,7 +295,7 @@ Install() {
     Scriptinfo
 
     Green "Installing ${SCRIPT_NAME_DISPLAY}"
-    if [ ! Check_Firmware ]; then
+    if [ ! "$Check_Firmware" ]; then
         Red "[ERROR] Addons are not supported in this routers firmware - script aborting!!!"
         Press_Enter
         rm -f "${0}" 2>/dev/null
@@ -345,12 +353,12 @@ Update() {
         updatestatus="NoUpdate"
     fi
 
-    if [ "${1}" = "check" ]; then
-        # Do not proceed with any updating if check function requested
-        return
-    fi
+#    if [ "${1}" = "check" ]; then
+#        # Do not proceed with any updating if check function requested
+#        return
+#    fi
 
-    if [ "${mode}" = "interactive" ] && [ -z "${1}" ]; then
+    if [ "${mode}" = "interactive" ]; then
         case "${updatestatus}" in
         'NoUpdate')
             Green "   - You have the latest version installed"
@@ -428,15 +436,15 @@ Hide () {
     fi
 
     # chect to make sure the hidemenus files contains some uncommented menus to hide
-    count_menus_tohide=$(grep -v '^#' "${HIDEMENUS_FILE_PATH}" | grep 'menu_' | wc -l) 
-    if [ $count_menus_tohide = 0 ]; then 
+    count_menus_tohide=$(grep -v '^#' "${HIDEMENUS_FILE_PATH}" | grep -c 'menu_') 
+    if [ "$count_menus_tohide" = 0 ]; then 
         if [ "${mode}" = "interactive" ]; then
             clear
-            Red "[ERROR] "${HIDEMENUS_FILE_PATH}" doesn't contain any un-commented menus to hide - no changes made to router UI"
-            echo $invalid_menus
+            Red "[ERROR] $HIDEMENUS_FILE_PATH doesn't contain any un-commented menus to hide - no changes made to router UI"
+            echo "$invalid_menus"
             return
         else
-            Logmsg "[ERROR] "${HIDEMENUS_FILE_PATH}" doesn't contain any un-commented menus to hide - no changes made to router UI"
+            Logmsg "[ERROR] $HIDEMENUS_FILE_PATH doesn't contain any un-commented menus to hide - no changes made to router UI"
             exit
         fi
     fi    
@@ -448,14 +456,14 @@ Hide () {
     invalid_menus=$(grep -Fxvf "${DEFAULTMENUS_FILE_PATH}" "${final_menus_tohidelist}")
 
     # check to make sure hidemenus file contains valid menu names to hide 
-    if [ $invalid_menus ]; then
+    if [ "$invalid_menus" ]; then
         if [ "${mode}" = "interactive" ]; then
             clear
-            Red "[ERROR] "${HIDEMENUS_FILE_PATH}" contains the following invalid menu name(s) - choose the HELP option for valid menu names to use"
-            echo $invalid_menus
+            Red "[ERROR] $HIDEMENUS_FILE_PATH contains the following invalid menu name(s) - choose the HELP option for valid menu names to use"
+            echo "$invalid_menus"
             return
         else
-            Logmsg "[ERROR] "${HIDEMENUS_FILE_PATH}" contains invalid menu name(s) - correct the file and rerun"
+            Logmsg "[ERROR] $HIDEMENUS_FILE_PATH contains invalid menu name(s) - correct the file and rerun"
             exit
         fi
     fi
@@ -487,7 +495,8 @@ Hide () {
 
     # process hidemenus file, skipping comments and blank lines, and for each menu name, add it to the menutree.js file to be excluded
     while read -r line; do
-        sed -i "${lineNum}i retArray.push("\"${line}\"");   //hidemenus" ${MENUTREE_FILE}
+        sed -i "${lineNum}i retArray.push($line);   //hidemenus" ${MENUTREE_FILE}
+        #sed -i "${lineNum}i retArray.push("\"${line}\"");   //hidemenus" ${MENUTREE_FILE}
         lineNum=$((lineNum + 1)) 
     done < $final_menus_tohidelist
 
@@ -515,7 +524,7 @@ Unhide () {
     num_hidemenus="$(grep -c "hidemenus" /tmp/menuTree.js)"
 
     # If the menuTree.js contained menu lines with the string "hidemenus", then remove them
-    if [ $num_hidemenus -ne 0 ]; then
+    if [ "$num_hidemenus" -ne 0 ]; then
         # create addonwebui lockfile to prevent any other addons attempting to update menutree.js at same time
         FD=386
         eval exec "${FD}>${LOCK_FILE}"
@@ -610,7 +619,7 @@ Main_Menu() {
         '9')
             Uninstall
             Magenta "   - Thanks for using $SCRIPT_NAME_DISPLAY - Bye"
-            cd
+            cd ... || exit
             exit
         ;;
         'e'|'E'|'exit')
@@ -642,7 +651,7 @@ fi
 # verify only certain unattended commmands were passed into script, otherwise exit
 if [  ${mode} = "interactive" ];  then
     :
-elif [  ${mode} = "unattended" ]  && [ ! $1 == "hide" ]; then
+elif [  ${mode} = "unattended" ]  && [ ! "$1" = "hide" ]; then
     echo "wrong combo"
     exit
 fi
@@ -656,12 +665,6 @@ fi
 case "$1" in
     'menu'|'')
         Main_Menu
-    ;;
-    'hide')
-        Hide
-    ;;
-    'unhide')
-        Unhide
     ;;
     'install')
         Install

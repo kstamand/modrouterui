@@ -295,7 +295,7 @@ Install() {
     Scriptinfo
 
     Green "Installing ${SCRIPT_NAME_DISPLAY}"
-    if [ ! "$Check_Firmware" ]; then
+    if ! Check_Firmware; then
         Red "[ERROR] Addons are not supported in this routers firmware - script aborting!!!"
         Press_Enter
         rm -f "${0}" 2>/dev/null

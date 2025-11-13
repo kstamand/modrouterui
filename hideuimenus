@@ -21,8 +21,8 @@
 # Description:  Installs/uninstals/modifies the list of "menus" that show in the browser when you go to the routers default webpage
 # Reference:    This script is based on Asuswrt-merlin third party addon api
 #+      https://github.com/RMerl/asuswrt-merlin/wiki/Addons-API/90b49e443b8ce64e82c0970237199deff46869f5
-# Documentation: https://github.com/kstamand/HideUIMenus
-# Credits:      Code in this script modeled after FlexQoS (Dave14305) and SpdMerlin (Jack Yaz)
+# Documentation: https://github.com/kstamand/modrouterui/tree/main
+# Credits:      Code in this script modeled after FlexQoS (Dave14305) and SpdMerlin (Jack Yaz / )
 #----------------------------------------------------------------------------------------------------#
 
 # AsusWRT Merlin Addon API helper functions
@@ -52,12 +52,11 @@ CYAN_TEXT='\033[36m'
 RESET='\033[0m'
 ### End of Script Variables
 
-# -x is a flag to show verbose script output for debugging purposes only
 Debug(){
     clear
     set -x
     Yellow "Debugging enabled ..."
-}
+} # end of Debug
 
 Logmsg() {
     # Parameter options - $1 = message
@@ -128,7 +127,7 @@ echo -e "${GREEN_TEXT}"
 grep index: /www/require/modules/menuTree.js | cut -d ' ' -f2- | sed 's/[",]//g' | awk "${FILTER_MENUS_LIST}"
 echo -e "${RESET}"
 grep index: /www/require/modules/menuTree.js | cut -d ' ' -f2- | sed 's/[",]//g' | awk "${FILTER_MENUS_LIST}" > "${DEFAULTMENUS_FILE_PATH}"
-}
+} # end Show_Help ()
 
 Press_Enter(){
     [ "${mode}" = "interactive" ] || return
@@ -352,11 +351,6 @@ Update() {
     else
         updatestatus="NoUpdate"
     fi
-
-#    if [ "${1}" = "check" ]; then
-#        # Do not proceed with any updating if check function requested
-#        return
-#    fi
 
     if [ "${mode}" = "interactive" ]; then
         case "${updatestatus}" in
